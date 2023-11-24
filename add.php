@@ -1,3 +1,10 @@
+
+<?php
+
+require_once 'vendor/autoload.php';
+require_once 'includes/_functions.php';
+include 'includes/_db.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -10,7 +17,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 
+
 <body>
+<?php
+       $query = $dbCo->prepare("SELECT * FROM transaction
+       WHERE YEAR(date) = YEAR(CURRENT_DATE()) AND MONTH(date) = MONTH(CURRENT_DATE())
+       ORDER BY date DESC;");
+
+       $isQueryOk = $query->execute();
+       $transaction = $query->fetchAll();
+
+      
+       foreach ($query->fetchAll() as $transaction) {
+        $isEdit = isset($_GET['action']) && $_GET['action'] === 'edit' && intval($_GET['id']) === intval($transaction['id_transaction']);
+    ?>
+       
+           <li class="transaction" data-id-transaction="<?= $transaction['id_transaction'] ?>">
+           
+        if(is$edit) {
+
+        } 
 
     <div class="container-fluid">
         <header class="row flex-wrap justify-content-between align-items-center p-3 mb-4 border-bottom">
@@ -33,15 +59,20 @@
                     </li>
                 </ul>
             </nav>
-            <form action="" class="col-12 col-md-4" role="search">
+            <template id = transaction>
+                <?
+                if($isEdit){
+
+            <form id = transactionForm action="" method="POST" class="col-12 col-md-4" role="search">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Rechercher..."
-                        aria-describedby="button-search">
+                        aria-describedby="button-search" <?= $transaction['id_transaction'] ?>">
                     <button class="btn btn-primary" type="submit" id="button-search">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
             </form>
+        }
         </header>
     </div>
 
@@ -51,11 +82,17 @@
                 <h1 class="my-0 fw-normal fs-4">Ajouter une opération</h1>
             </div>
             <div class="card-body">
-                <form>
+                <form id="transactionList method="post">
+                    <input type="hidden" id="editId" name="editId">
+            
                     <div class="mb-3">
                         <label for="name" class="form-label">Nom de l'opération *</label>
                         <input type="text" class="form-control" name="name" id="name"
                             placeholder="Facture d'électricité" required>
+                  
+
+
+
                     </div>
                     <div class="mb-3">
                         <label for="date" class="form-label">Date *</label>
@@ -85,9 +122,18 @@
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary btn-lg">Ajouter</button>
                     </div>
+    
                 </form>
+    
+            </template>
+    }
+
             </div>
         </section>
+
+
+
+
     </div>
 
     <div class="position-fixed bottom-0 end-0 m-3">
@@ -95,7 +141,9 @@
             <i class="bi bi-plus fs-1"></i>
         </a>
     </div>
-
+        <?php
+        
+        ?>
     <footer class="py-3 mt-4 border-top">
         <p class="text-center text-body-secondary">© 2023 Mes comptes</p>
     </footer>

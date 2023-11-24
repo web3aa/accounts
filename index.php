@@ -1,3 +1,18 @@
+<?php
+
+require_once 'vendor/autoload.php';
+require_once 'includes/_functions.php';
+include 'includes/_db.php';
+include 'include/categories.php';
+include 'include/add.php';
+include 'include/import.php';
+include 'include/summary.php';
+
+session_start();
+generateToken();
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -11,14 +26,36 @@
 </head>
 
 <body>
-
+<?= getNotifHtml() ?>
     <div class="container-fluid">
         <header class="row flex-wrap justify-content-between align-items-center p-3 mb-4 border-bottom">
+        <h1 class="main-ttl">TRANSACTIONS</h1>
+        <?php
+        $query = $dbCo->prepare("SELECT * FROM transaction
+        WHERE YEAR(date) = YEAR(CURRENT_DATE()) AND MONTH(date) = MONTH(CURRENT_DATE())
+        ORDER BY date DESC;");
+
+        $isQueryOk = $query->execute();
+        $transaction = $query->fetchAll();
+
+        foreach ($query->fetchAll() as $transaction) {
+         
+                echo '<li>'.$amount['amount'].' 
+                
+                </li>';
+        ?>
+            <li class="transaction" data-id-transaction="<?= $transaction['id_transaction'] ?>">
+
+
+      
+        
+          
             <a href="index.html" class="col-1">
                 <i class="bi bi-piggy-bank-fill text-primary fs-1"></i>
             </a>
             <nav class="col-11 col-md-7">
                 <ul class="nav">
+                <ul class="transaction-list" id="transactionsList">
                     <li class="nav-item">
                         <a href="index.html" class="nav-link link-secondary" aria-current="page">Opérations</a>
                     </li>
@@ -32,8 +69,11 @@
                         <a href="import.html" class="nav-link link-body-emphasis">Importer</a>
                     </li>
                 </ul>
+                </ul>
+        </li>
+     
             </nav>
-            <form action="" class="col-12 col-md-4" role="search">
+            <form id= "transactionForm" action="" method="POST" class="col-12 col-md-4" role="search">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Rechercher..."
                         aria-describedby="button-search">
@@ -42,7 +82,11 @@
                     </button>
                 </div>
             </form>
+            <?php
+        }
+        ?>
         </header>
+   
     </div>
 
     <div class="container">
